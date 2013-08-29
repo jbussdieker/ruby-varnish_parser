@@ -1,0 +1,4 @@
+class VarnishParser::Parser
+rule
+  CHAR
+end
