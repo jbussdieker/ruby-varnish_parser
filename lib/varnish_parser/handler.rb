@@ -10,7 +10,15 @@ module VarnishParser
       push [:hash]
     end
 
+    def start_array
+      push [:array]
+    end
+
     def end_object
+      @stack.pop
+    end
+
+    def end_array
       @stack.pop
     end
 
@@ -19,16 +27,16 @@ module VarnishParser
     end
 
     def result
-      root = @stack.first.last
-      process root.first, root.drop(1)
+      items = @stack.first[1..-1]
+      items.collect {|item| process(item.first, item.drop(1))}
     end
 
 private
 
     def process(type, rest)
       case type
-#      when :array
-#        rest.map { |x| process(x.first, x.drop(1)) }
+      when :array
+        rest.map { |x| process(x.first, x.drop(1)) }
       when :hash
         Hash[rest.map { |x|
           process(x.first, x.drop(1))

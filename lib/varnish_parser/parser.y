@@ -1,6 +1,6 @@
 class VarnishParser::Parser
 
-token EQUAL BACKEND DIRECTOR NAME TYPE KEY STRING
+token STRING
 
 rule
   directives
@@ -12,7 +12,7 @@ rule
     | director
     ;
   backend : string string object
-  director : string string string start_object objects end_object
+  director : string string string start_array objects end_array
   objects
     : objects object
     | object
@@ -26,12 +26,14 @@ rule
     ;
   start_object: '{' { @handler.start_object }
   end_object: '}' { @handler.end_object }
+  start_array: '{' { @handler.start_array }
+  end_array: '}' { @handler.end_array }
   pair: string '=' value
   value
     : string ';'
     | object
     ;
-  string: STRING  { @handler.scalar val[0].gsub(/^"|"$/, '') }
+  string: STRING { @handler.scalar val[0].gsub(/^"|"$/, '') }
 end
 
 ---- inner
